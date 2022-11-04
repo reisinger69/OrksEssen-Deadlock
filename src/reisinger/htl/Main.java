@@ -2,6 +2,7 @@ package reisinger.htl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
 
@@ -19,12 +20,17 @@ public class Main {
         Ork Alois4 = new Ork(3, forks);
         Ork Alois5 = new Ork(4, forks);
 
-        System.out.println(Alois1.getLeftFork().number);
-        System.out.println(Alois1.getRightFork().number);
-        System.out.println(Ork.getList());
-        Alois1.returnLeft();
-        Alois1.returnRight();
-        System.out.println(Ork.getList());
+        Thread t = new Thread(Alois1);
+        Thread t1 = new Thread(Alois2);
+        Thread t2 = new Thread(Alois3);
+        Thread t3 = new Thread(Alois4);
+        Thread t4 = new Thread(Alois5);
+
+        t.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
 
     }
 }

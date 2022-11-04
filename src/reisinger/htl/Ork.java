@@ -17,16 +17,16 @@ public class Ork implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("start");
         while (true) {
             try {
-                System.out.println("starting drinking");
+                System.out.println("Ork " + number + " starting drinking");
                 drink();
                 leftFork = getLeftFork();
                 rightFork = getRightFork();
                 eat();
-
-
-
+                returnLeft();
+                returnRight();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -34,37 +34,69 @@ public class Ork implements Runnable{
     }
 
     void drink() throws InterruptedException {
-        int random = (int) (Math.random()*5+1);
-        Thread.sleep(random*100);
-        System.out.println("slept for " + random*100 + "ms");
+        int random = (int) (Math.random()*15+1);
+        Thread.sleep(random);
+        System.out.println("Ork " + number + " slept for " + random + "ms");
     }
 
     void eat() throws InterruptedException {
         int random = (int) (Math.random()*5+1);
-        Thread.sleep(random*100);
-        System.out.println("Ork " + number + " was eating for " + random*100 + "ms");
+        Thread.sleep(random);
+        System.out.println("Ork " + number + " was eating for " + random + "ms");
     }
 
-    Fork getRightFork() {
-        return forks.remove(number);
-    }
-
-    Fork getLeftFork() {
-        if (number <= 0) {
-            return forks.remove((number-1+5));
+    Fork getRightFork() throws InterruptedException {
+        System.out.println("trying to get right fork");
+        while (true) {
+            Thread.sleep(5);
+            Fork temp = forks.get(number);
+            if (temp == null) {
+                //System.out.println("not found - " + number);
+                continue;
+            }
+            System.out.println("got right fork - " + number);
+            rightFork = temp;
+            forks.set(number, null);
+            return temp;
         }
-        return forks.remove(number-1);
+    }
+
+    Fork getLeftFork() throws InterruptedException {
+        System.out.println("trying to get left fork");
+        while (true) {
+            Thread.sleep(5);
+            if (number <= 0) {
+                Fork temp = forks.get((number - 1 + 5));
+                if (temp == null) {
+                    //System.out.println("not found - " + number);
+                    continue;
+                }
+                leftFork = temp;
+                forks.set(number - 1 + 5, null);
+                return temp;
+            }
+            Fork temp = forks.get(number - 1);
+            if (temp == null) {
+                //System.out.println("not found - " + number);
+                continue;
+            }
+            leftFork = temp;
+            forks.set(number - 1, null);
+            System.out.println("got left fork - " + number);
+            return temp;
+        }
     }
 
     void returnRight() {
-        forks.add(number, rightFork);
+        forks.set(number, rightFork);
     }
 
     void returnLeft() {
         if (number <= 0) {
-            forks.add(number-1+5, leftFork);
+            forks.set(number-1+5, leftFork);
+        } else {
+            forks.set(number - 1, leftFork);
         }
-        forks.add(number-1, leftFork);
     }
 
     public static List getList() {
