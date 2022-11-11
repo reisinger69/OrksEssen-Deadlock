@@ -2,10 +2,13 @@ package reisinger.htl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Ork implements Runnable{
 
     private int number;
+    static Lock l = new ReentrantLock();
     static List<Fork> forks = new ArrayList();
     private Fork leftFork;
     private Fork rightFork;
@@ -18,12 +21,19 @@ public class Ork implements Runnable{
     @Override
     public void run() {
         System.out.println("start");
-        while (true) {
+        int counter = 0;
+        while (counter < 1000) {
+            counter++;
             try {
                 System.out.println("Ork " + number + " starting drinking");
                 drink();
-                leftFork = getLeftFork();
-                rightFork = getRightFork();
+                l.lock();
+                try {
+                    leftFork = getLeftFork();
+                    rightFork = getRightFork();
+                } finally {
+                    l.unlock();
+                }
                 eat();
                 returnLeft();
                 returnRight();
